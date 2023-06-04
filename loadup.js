@@ -1,8 +1,30 @@
 
+class Player {
+    constructor(x, y, moving, facing, location) {
+        this.playerX = x
+        this.playerY = y
+        this.playerMoving = moving
+        this.playerFacing = facing
+        this.playerLocation = location
+    }
+}
+var stop = false;
+var frameCount = 0;
+var fps, fpsInterval, startTime, now, then, elapsed;
+
+
+// initialize the timer variables and start the animation
+
+function startAnimating(fps) {
+
+}
 class Game {
+
     constructor() {
         this.imageList = [];
+        this.playerlist = [];
         this.imageLoad(this.imageList)
+        this.initPlayers(this.playerlist)
         this.canvas = document.createElement('canvas');
         this.canvas.id = "CursorLayer";
         this.canvas.width = 620;
@@ -19,24 +41,82 @@ class Game {
         var rowTileCount = 28;   // The number of tiles in a row of our background
         var colTileCount = 31;   // The number of tiles in a column of our background
         var imageNumTiles = 16;  // The number of tiles per row in the tileset image
+        fpsInterval = 1000 / fps;
+        then = Date.now();
+        startTime = then;
+        this.animate();
         document.body.style.position = "absolute"
         document.body.style.left = 0
         document.body.style.overflowY = "hidden"
         document.body.style.margin = 0
         document.body.style.background = "black"
-        this.imageList[0].onload =() => {
-            this.drawImage(20,28,31,16)
+        document.addEventListener('keydown', (event) => {
+            var name = event.key;
+            switch (name) {
+                case "w":
+                    this.playerlist[0].playerY -= 2; 
+                    console.log(this.playerlist[0].playerY)
+                    this.drawPlayers()
+                    break;
+                case "a":
+                    this.playerlist[0].playerX -= 2; 
+                    this.drawPlayers()
+                    break;
+                case "s":
+                    this.playerlist[0].playerY += 2; 
+                    this.drawPlayers()
+                    break;
+                case "d":
+                    this.playerlist[0].playerX += 2; 
+                    this.drawPlayers()
+                    break;
+            }
+        }, false);
+        this.imageList[0].onload = () => {
+            this.drawImage(20, 26, 31, 16)
+        }
+        this.imageList[1].onload = () => {
+            this.drawPlayers()
+        }
+    }
+    animate() {
+
+
+        // calc elapsed time since last loop
+
+        now = Date.now();
+        elapsed = now - then;
+   
+        // if enough time has elapsed, draw the next frame
+
+        if (elapsed > fpsInterval) {
+         
+            // Get ready for next frame by setting then=now, but also adjust for your
+            // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+            then = now - (elapsed % fpsInterval);
+
+            // Put your drawing code here
 
         }
+        requestAnimationFrame(() => this.animate());
+    }
+
+    initPlayers(playerList) {
+        let player = new Player(0, 0, false, "up", 1)
+        playerList.push(player)
     }
     imageLoad(imageList) {
         var tilesetImage = new Image();
         tilesetImage.src = 'src/tileset.png';
         imageList.push(tilesetImage)
-
+        var tilesetImage2 = new Image();
+        tilesetImage2.src = 'src/playermodel.png';
+        imageList.push(tilesetImage2)
     }
-    drawImage(tileSize,rowTileCount,colTileCount,imageNumTiles) {
-        console.log("no")
+    drawPlayers() {
+        this.ctx.drawImage(this.imageList[1], 0, 40, 40, 40, this.playerlist[0].playerX, this.playerlist[0].playerY, 40, 40);
+    }
+    drawImage(tileSize, rowTileCount, colTileCount, imageNumTiles) {
         for (var r = 0; r < rowTileCount; r++) {
             for (var c = 0; c < colTileCount; c++) {
                 let tile = layer1[r][c];
