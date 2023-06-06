@@ -35,6 +35,8 @@ class Game {
         this.canvas.style.left = "70px";
         this.canvas.style.top = "20px";
         this.canvas.style.margin = 0;
+        this.keyPresses = {};
+        console.log(this.keyPresses)
         this.ctx = this.canvas.getContext('2d')
         document.body.appendChild(this.canvas);
         var tileSize = 20;       // The size of a tile (32×32)
@@ -50,47 +52,49 @@ class Game {
         document.body.style.overflowY = "hidden"
         document.body.style.margin = 0
         document.body.style.background = "black"
-        document.addEventListener('keydown', (event) => {
-            var name = event.key;
-            switch (name) {
-                case "w":
-                    this.playerlist[0].playerY -= 2; 
-                    console.log(this.playerlist[0].playerY)
-                    this.drawPlayers()
-                    break;
-                case "a":
-                    this.playerlist[0].playerX -= 2; 
-                    this.drawPlayers()
-                    break;
-                case "s":
-                    this.playerlist[0].playerY += 2; 
-                    this.drawPlayers()
-                    break;
-                case "d":
-                    this.playerlist[0].playerX += 2; 
-                    this.drawPlayers()
-                    break;
-            }
+        
+        window.addEventListener('keydown', (event) => {
+            console.log(event)
+            console.log(this.keyPresses)
+            this.keyPresses[event.key] = true;
         }, false);
-        this.imageList[0].onload = () => {
-            this.drawImage(20, 26, 31, 16)
-        }
-        this.imageList[1].onload = () => {
-            this.drawPlayers()
-        }
+        window.addEventListener('keyup',  (event) => {
+            console.log(event)
+            console.log(this.keyPresses)
+            this.keyPresses[event.key] = false;
+        }, false)
+    }
+
+    keyUpListener(event) {
+        this.keyPresses[event.key] = false;
     }
     animate() {
-
+        this.ctx.clearRect(0, 0, 640, 480)
 
         // calc elapsed time since last loop
-
+        if (this.keyPresses.w) {
+            this.playerlist[0].playerY -= 2;
+            this.drawPlayers()
+        }
+        if (this.keyPresses.a) {
+            this.playerlist[0].playerX -= 2;
+            this.drawPlayers()
+        }
+        if (this.keyPresses.s) {
+            this.playerlist[0].playerY += 2;
+            this.drawPlayers()
+        }
+        if (this.keyPresses.d) {
+            this.playerlist[0].playerX += 2;
+            this.drawPlayers()
+        }
         now = Date.now();
         elapsed = now - then;
-   
+
         // if enough time has elapsed, draw the next frame
 
         if (elapsed > fpsInterval) {
-         
+
             // Get ready for next frame by setting then=now, but also adjust for your
             // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
             then = now - (elapsed % fpsInterval);
@@ -98,6 +102,8 @@ class Game {
             // Put your drawing code here
 
         }
+        this.drawImage(20, 26, 31, 16)
+        this.drawPlayers()
         requestAnimationFrame(() => this.animate());
     }
 
@@ -125,6 +131,7 @@ class Game {
                 this.ctx.drawImage(this.imageList[0], (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
             }
         }
+
     }
 }
 var game = new Game();
