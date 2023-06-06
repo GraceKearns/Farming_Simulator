@@ -54,13 +54,13 @@ class Game {
         document.body.style.overflowY = "hidden"
         document.body.style.margin = 0
         document.body.style.background = "black"
-        
+
         window.addEventListener('keydown', (event) => {
             console.log(event)
             console.log(this.keyPresses)
             this.keyPresses[event.key] = true;
         }, false);
-        window.addEventListener('keyup',  (event) => {
+        window.addEventListener('keyup', (event) => {
             console.log(event)
             console.log(this.keyPresses)
             this.keyPresses[event.key] = false;
@@ -75,29 +75,48 @@ class Game {
         this.drawImage(20, 26, 31, 16)
         // calc elapsed time since last loop
         if (this.keyPresses.w) {
-            this.playerlist[0].playerY -= 2;
-            this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 120
-          
+            if (this.getTile(this.playerlist[0].playerX, this.playerlist[0].playerY - 2, 20) == 1) {
+                
+            }
+            else {
+                this.playerlist[0].playerY -= 2;
+                this.playerlist[0].playerWalkX = 0
+                this.playerlist[0].playerWalkY = 120
+            }
         }
-       if (this.keyPresses.a) {
-            this.playerlist[0].playerX -= 2;
-            this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 80
-      
+        if (this.keyPresses.a) {
+            if (this.getTile(this.playerlist[0].playerX - 2, this.playerlist[0].playerY, 20) == 1) {
+              
+            }
+            else {
+                this.playerlist[0].playerX -= 2;
+                this.playerlist[0].playerWalkX = 0
+                this.playerlist[0].playerWalkY = 80
+            }
         }
-         if (this.keyPresses.s) {
-            this.playerlist[0].playerY += 2;
-            this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 0
+        if (this.keyPresses.s) {
+            if (this.getTile(this.playerlist[0].playerX, this.playerlist[0].playerY + 2, 20) == 1) {
+               
+            }
+            else {
+                this.playerlist[0].playerY += 2;
+                this.playerlist[0].playerWalkX = 0
+                this.playerlist[0].playerWalkY = 0
+            }
         }
-       if (this.keyPresses.d) {
-            this.playerlist[0].playerX += 2;
-            this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 40
+        if (this.keyPresses.d) {
+            if (this.getTile(this.playerlist[0].playerX + 2, this.playerlist[0].playerY, 20) == 1) {
+                
+            }
+            else {
+                this.playerlist[0].playerX += 2;
+                this.playerlist[0].playerWalkX = 0
+                this.playerlist[0].playerWalkY = 40
+            }
         }
-        this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 40, 40,this.playerlist[0].playerX,this.playerlist[0].playerY)
+        this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 40, 40, this.playerlist[0].playerX, this.playerlist[0].playerY)
         now = Date.now();
+
         elapsed = now - then;
 
         // if enough time has elapsed, draw the next frame
@@ -111,13 +130,13 @@ class Game {
             // Put your drawing code here
 
         }
-        
+
 
         requestAnimationFrame(() => this.animate());
     }
 
     initPlayers(playerList) {
-        let player = new Player(0, 0, false, "up", 1)
+        let player = new Player(80, 80, false, "up", 1)
         playerList.push(player)
     }
     imageLoad(imageList) {
@@ -128,8 +147,8 @@ class Game {
         tilesetImage2.src = 'src/playermodel.png';
         imageList.push(tilesetImage2)
     }
-    drawPlayers(sx,sy,width,height,x,y) {
-        console.log(sx)
+    drawPlayers(sx, sy, width, height, x, y) {
+
         this.ctx.drawImage(this.imageList[1], sx, sy, width, height, x, y, 40, 40);
     }
     drawImage(tileSize, rowTileCount, colTileCount, imageNumTiles) {
@@ -142,6 +161,11 @@ class Game {
             }
         }
 
+    }
+    getTile(x, y, tileSize) {
+        const tileX = Math.trunc(x / tileSize) || 0
+        const tileY = Math.trunc(y / tileSize) || 0
+        return layer1Boundary[tileY][tileX]
     }
 }
 var game = new Game();
