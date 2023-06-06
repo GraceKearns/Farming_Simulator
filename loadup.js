@@ -3,6 +3,8 @@ class Player {
     constructor(x, y, moving, facing, location) {
         this.playerX = x
         this.playerY = y
+        this.playerWalkX = 0
+        this.playerWalkY = 0
         this.playerMoving = moving
         this.playerFacing = facing
         this.playerLocation = location
@@ -70,24 +72,31 @@ class Game {
     }
     animate() {
         this.ctx.clearRect(0, 0, 640, 480)
-
+        this.drawImage(20, 26, 31, 16)
         // calc elapsed time since last loop
         if (this.keyPresses.w) {
             this.playerlist[0].playerY -= 2;
-            this.drawPlayers()
+            this.playerlist[0].playerWalkX = 0
+            this.playerlist[0].playerWalkY = 120
+          
         }
-        if (this.keyPresses.a) {
+       if (this.keyPresses.a) {
             this.playerlist[0].playerX -= 2;
-            this.drawPlayers()
+            this.playerlist[0].playerWalkX = 0
+            this.playerlist[0].playerWalkY = 80
+      
         }
-        if (this.keyPresses.s) {
+         if (this.keyPresses.s) {
             this.playerlist[0].playerY += 2;
-            this.drawPlayers()
+            this.playerlist[0].playerWalkX = 0
+            this.playerlist[0].playerWalkY = 0
         }
-        if (this.keyPresses.d) {
+       if (this.keyPresses.d) {
             this.playerlist[0].playerX += 2;
-            this.drawPlayers()
+            this.playerlist[0].playerWalkX = 0
+            this.playerlist[0].playerWalkY = 40
         }
+        this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 40, 40,this.playerlist[0].playerX,this.playerlist[0].playerY)
         now = Date.now();
         elapsed = now - then;
 
@@ -102,8 +111,8 @@ class Game {
             // Put your drawing code here
 
         }
-        this.drawImage(20, 26, 31, 16)
-        this.drawPlayers()
+        
+
         requestAnimationFrame(() => this.animate());
     }
 
@@ -119,8 +128,9 @@ class Game {
         tilesetImage2.src = 'src/playermodel.png';
         imageList.push(tilesetImage2)
     }
-    drawPlayers() {
-        this.ctx.drawImage(this.imageList[1], 0, 40, 40, 40, this.playerlist[0].playerX, this.playerlist[0].playerY, 40, 40);
+    drawPlayers(sx,sy,width,height,x,y) {
+        console.log(sx)
+        this.ctx.drawImage(this.imageList[1], sx, sy, width, height, x, y, 40, 40);
     }
     drawImage(tileSize, rowTileCount, colTileCount, imageNumTiles) {
         for (var r = 0; r < rowTileCount; r++) {
