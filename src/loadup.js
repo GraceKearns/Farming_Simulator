@@ -96,10 +96,10 @@ class Game {
     }
     imageLoad(imageList) {
         var tilesetImage = new Image();
-        tilesetImage.src = 'src/tileset.png';
+        tilesetImage.src = 'src/img/tileset.png';
         imageList.push(tilesetImage)
         var tilesetImage2 = new Image();
-        tilesetImage2.src = 'src/playermodel.png';
+        tilesetImage2.src = 'src/img/playermodel.png';
         imageList.push(tilesetImage2)
     }
     drawPlayers(sx, sy, width, height, x, y) {
