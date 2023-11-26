@@ -10,12 +10,13 @@ function startAnimating(fps) {
 }
 class Game {
     constructor() {
+        window.addEventListener('resize', () => this.handleResize());
         fpsInterval = 1000 / fps;
         then = Date.now();
         startTime = then;
         document.body.style.position = "absolute"
         document.body.style.left = 0
-        document.body.style.overflowY = "hidden"
+        document.body.style.overflow = "hidden"
         document.body.style.margin = 0
         document.body.style.background = "black"
         this.imageList = [];
@@ -31,7 +32,28 @@ class Game {
         this.canvas.style.border = "1px solid black";
         this.canvas.style.left = "70px";
         this.canvas.style.top = "20px";
+        this.canvas.style.width = "100vw"
+        this.canvas.style.height = "100vh"
         this.canvas.style.margin = 0;
+        this.imageContainer = document.createElement('div');
+        this.imageContainer.id = 'imageContainer';
+        this.imageContainer.style.position = 'absolute';
+        this.imageContainer.style.width = '640px'; // Set width as needed
+        this.imageContainer.style.height = '480px'; // Set height as needed
+        this.imageContainer.style.top = '0px'; // Adjust top position
+        this.imageContainer.style.left = '0px'; // Adjust left position
+        this.imageContainer.style.zIndex = '4'; // Ensure it's above the canvas
+        this.imageContainer.style.background = 'rgba(255, 255, 255, 0)'; // Optional: set background color/transparency
+        this.imageList[2].style.position = 'absolute';
+
+        this.imageList[2].style.zIndex = '-1'; // Adjust left position within the imageContainer div
+        this.imageContainer.appendChild(this.imageList[2]);
+        this.imageList[3].style.position = 'absolute';
+       
+        this.imageList[3].style.zIndex = '-1'; // Adjust left position within the imageContainer div
+        this.imageContainer.appendChild(this.imageList[3]);
+        // Append the div to the body
+        document.body.appendChild(this.imageContainer);
         this.keyPresses = {};
         console.log(this.keyPresses)
         this.ctx = this.canvas.getContext('2d')
@@ -48,16 +70,36 @@ class Game {
             this.keyPresses[event.key] = false;
         }, false)
     }
+    handleResize() {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
 
+
+        this.imageContainer.style.width = windowWidth + 'px';
+        this.imageContainer.style.height = windowHeight + 'px';
+        const imageWidth = this.imageList[2].width; // Assuming imageList[2] is the bottom-centered image
+        const imageHeight = this.imageList[2].height;
+        const leftPosition = (windowWidth - imageWidth) / 2 + 'px';
+        const bottomPosition = (windowHeight - imageHeight) + 'px';
+        this.imageList[2].style.left = leftPosition;
+        this.imageList[2].style.top = bottomPosition;
+        const imageWidth3 = this.imageList[3].width; // Assuming imageList[3] is the top-right image
+        this.imageList[3].style.position = 'absolute';
+        this.imageList[3].style.top = '10px'; // Adjust top position
+        this.imageList[3].style.left = windowWidth-imageWidth3+"px"; // Adjust right position
+        this.imageList[3].style.width = imageWidth3 + 'px'; // Adjust width to retain original size
+    
+
+    }
     keyUpListener(event) {
         this.keyPresses[event.key] = false;
     }
     animate() {
-        this.ctx.clearRect(0,0,640,480)
+        this.ctx.clearRect(0, 0, 640, 480)
         this.drawMap(40, layer1.length, layer1[0].length, 16)
-        
+
         console.log(layer1.length + " " + layer1[0].length)
-    
+
         let deltaMov = { x: 0, y: 0 }
 
         if (this.keyPresses.w) {
@@ -103,7 +145,7 @@ class Game {
 
         }
         this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 40, 40, this.playerlist[0].playerX, this.playerlist[0].playerY)
-        
+
         now = Date.now();
         elapsed = now - then;
         if (elapsed > fpsInterval) {
@@ -121,8 +163,13 @@ class Game {
         imageList.push(tilesetImage)
         var tilesetImage2 = new Image();
         tilesetImage2.src = 'src/img/playermodel.png';
-        var tilesetImage2 = new Image();
         imageList.push(tilesetImage2)
+        var itembar = new Image();
+        itembar.src = 'src/img/hud/hud.png';
+        imageList.push(itembar)
+        var menu = new Image();
+        menu.src = 'src/img/hud/info.png';
+        imageList.push(menu)
     }
     drawPlayers(sx, sy, width, height, x, y) {
         this.ctx.drawImage(this.imageList[1], sx, sy, width, height, x, y, 40, 40);
@@ -130,19 +177,19 @@ class Game {
     drawMap(tileSize, rowTileCount, colTileCount, imageNumTiles, tileChoice) {
         let offsetX = Math.floor(this.playerlist[0].playerX + this.playerlist[0].playerCameraX) % tileSize;
         let offsetY = Math.floor(this.playerlist[0].playerY + this.playerlist[0].playerCameraY) % tileSize;
-        
+
         let startRow = Math.floor((this.playerlist[0].playerY + this.playerlist[0].playerCameraY) / tileSize);
         let startCol = Math.floor((this.playerlist[0].playerX + this.playerlist[0].playerCameraX) / tileSize);
-    
+
         for (let r = startRow; r < startRow + rowTileCount + 1; r++) {
             for (let c = startCol; c < startCol + colTileCount + 1; c++) {
                 let rowTile = Math.max(0, Math.min(layer1.length - 1, r));
                 let colTile = Math.max(0, Math.min(layer1[0].length - 1, c));
-    
+
                 let tile = layer1[rowTile][colTile];
                 let tileRow = (tile / imageNumTiles) | 0;
                 let tileCol = (tile % imageNumTiles) | 0;
-    
+
                 this.ctx.drawImage(
                     this.imageList[0],
                     tileCol * tileSize,
@@ -157,10 +204,10 @@ class Game {
             }
         }
     }
-    
-    
-    
-    
+
+
+
+
     getTile(x, y, tileSize) {
         const tileX = Math.trunc(x / tileSize) || 0
         const tileY = Math.trunc(y / tileSize) || 0
