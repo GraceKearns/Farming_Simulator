@@ -10,6 +10,8 @@ function startAnimating(fps) {
 }
 class Game {
     constructor() {
+        this.clock = new Clock()
+        console.log(this.clock.time)
         window.addEventListener('resize', () => this.handleResize());
         fpsInterval = 1000 / fps;
         then = Date.now();
@@ -23,6 +25,43 @@ class Game {
         this.playerlist = [];
         this.imageLoad(this.imageList)
         this.initPlayers(this.playerlist)
+       
+
+        window.addEventListener('keydown', (event) => {
+            console.log(this.playerlist[0].playerY)
+            console.log(this.playerlist[0].playerCameraY)
+            this.keyPresses[event.key] = true;
+        }, false);
+        window.addEventListener('keyup', (event) => {
+            this.keyPresses[event.key] = false;
+        }, false)
+    }
+    handleResize() {
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        this.imageContainer.style.width = windowWidth + 'px';
+        this.imageContainer.style.height = windowHeight + 'px';
+        const imageWidth = this.imageList[2].width; // Assuming imageList[2] is the bottom-centered image
+        const imageHeight = this.imageList[2].height;
+        const leftPosition = (windowWidth - imageWidth) / 2 + 'px';
+        const bottomPosition = (windowHeight - imageHeight) + 'px';
+        this.imageList[2].style.left = leftPosition;
+        this.imageList[2].style.top = bottomPosition;
+        const imageWidth3 = this.imageList[3].width; // Assuming imageList[3] is the top-right image
+        this.imageList[3].style.position = 'absolute';
+        this.imageList[3].style.top = '10px'; // Adjust top position
+        this.imageList[3].style.left = windowWidth-imageWidth3+"px"; // Adjust right position
+        this.imageList[3].style.width = imageWidth3 + 'px'; // Adjust width to retain original size
+        this.timeText.style.left= window.innerWidth -this.imageList[3].width/1.2 + "px";
+        this.timeText.style.top= this.imageList[3].height/1.5 + "px";
+        this.timeText2.style.left= window.innerWidth -this.imageList[3].width/1.2 + "px";
+        this.timeText2.style.top= this.imageList[3].height/2.4 + "px";
+        this.timeText2.innerHTML=this.clock.time.gameDOW[this.clock.time.seasonDay]+ " "+ this.clock.time.seasonDay
+        this.imageContainer.appendChild(this.imageList[2]);
+        this.imageContainer.appendChild(this.imageList[3]);
+
+    }
+    startGame() {
         this.canvas = document.createElement('canvas');
         this.canvas.id = "CursorLayer";
         this.canvas.width = 620;
@@ -45,57 +84,41 @@ class Game {
         this.imageContainer.style.zIndex = '4'; // Ensure it's above the canvas
         this.imageContainer.style.background = 'rgba(255, 255, 255, 0)'; // Optional: set background color/transparency
         this.imageList[2].style.position = 'absolute';
-
         this.imageList[2].style.zIndex = '-1'; // Adjust left position within the imageContainer div
-        this.imageContainer.appendChild(this.imageList[2]);
         this.imageList[3].style.position = 'absolute';
-       
         this.imageList[3].style.zIndex = '-1'; // Adjust left position within the imageContainer div
-        this.imageContainer.appendChild(this.imageList[3]);
+        this.imageList[3].style.width = this.imageList[3].width + 'px';
+        this.timeText = document.createElement('p'); 
+        this.timeText.style.position = 'absolute';
+        this.timeText.style.color = 'black';
+        this.timeText.style.zIndex = '5';
+        this.timeText.style.width="200px"
+        this.timeText.style.wrap="no-wrap"
+        this.timeText2 = document.createElement('p'); 
+        this.timeText2.style.position = 'absolute';
+        this.timeText2.style.color = 'black';
+        this.timeText2.style.zIndex = '5';
+        this.timeText2.style.width="200px"
+        this.timeText2.style.wrap="no-wrap"
+       
+        this.handleResize()
         // Append the div to the body
         document.body.appendChild(this.imageContainer);
+        document.body.appendChild(this.timeText);
+        document.body.appendChild(this.timeText2);
         this.keyPresses = {};
         console.log(this.keyPresses)
         this.ctx = this.canvas.getContext('2d')
         document.body.appendChild(this.canvas);
 
         this.animate();
-
-        window.addEventListener('keydown', (event) => {
-            console.log(this.playerlist[0].playerY)
-            console.log(this.playerlist[0].playerCameraY)
-            this.keyPresses[event.key] = true;
-        }, false);
-        window.addEventListener('keyup', (event) => {
-            this.keyPresses[event.key] = false;
-        }, false)
-    }
-    handleResize() {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-
-
-        this.imageContainer.style.width = windowWidth + 'px';
-        this.imageContainer.style.height = windowHeight + 'px';
-        const imageWidth = this.imageList[2].width; // Assuming imageList[2] is the bottom-centered image
-        const imageHeight = this.imageList[2].height;
-        const leftPosition = (windowWidth - imageWidth) / 2 + 'px';
-        const bottomPosition = (windowHeight - imageHeight) + 'px';
-        this.imageList[2].style.left = leftPosition;
-        this.imageList[2].style.top = bottomPosition;
-        const imageWidth3 = this.imageList[3].width; // Assuming imageList[3] is the top-right image
-        this.imageList[3].style.position = 'absolute';
-        this.imageList[3].style.top = '10px'; // Adjust top position
-        this.imageList[3].style.left = windowWidth-imageWidth3+"px"; // Adjust right position
-        this.imageList[3].style.width = imageWidth3 + 'px'; // Adjust width to retain original size
-    
-
     }
     keyUpListener(event) {
         this.keyPresses[event.key] = false;
     }
     animate() {
         this.ctx.clearRect(0, 0, 640, 480)
+        this.timeText.innerHTML=this.clock.getTime()
         this.drawMap(40, layer1.length, layer1[0].length, 16)
 
         console.log(layer1.length + " " + layer1[0].length)
@@ -170,6 +193,7 @@ class Game {
         var menu = new Image();
         menu.src = 'src/img/hud/info.png';
         imageList.push(menu)
+        menu.onload = () => this.startGame()
     }
     drawPlayers(sx, sy, width, height, x, y) {
         this.ctx.drawImage(this.imageList[1], sx, sy, width, height, x, y, 40, 40);

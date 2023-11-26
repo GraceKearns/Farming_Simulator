@@ -4,6 +4,9 @@ class Clock {
       gameDays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       gameSeasons: ["Summer", "Fall", "Winter", "Spring"],
       gameDay: 1,
+      seasonDay: 1,
+      gameDOW:0,
+      gameSE:0,
       min: 0,
       hour: 6,
       type: "AM",
@@ -39,7 +42,14 @@ class Clock {
       hour: hour === null ? this.time.hour : hour,
       type: type === null ? this.time.type : type,
     };
-    console.log(this.time);
+
+  }
+  getTime() {
+    let { min, hour, type } = this.time;
+  
+    const formattedHours = String(hour).padStart(2, "0");
+    const formattedMinutes = String(min).padStart(2, "0");
+    return `${formattedHours}:${formattedMinutes} ${type}`
   }
   setDay(day) {
     this.time.gameDay = day;
