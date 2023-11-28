@@ -20,9 +20,11 @@ class Clock {
     if (min >= 60) {
       min = 0;
       hour += 1;
+      if (hour > 11) {
+        type = type === "AM" ? "PM" : "AM";
+      }
       if (hour > 12) {
         hour = 1;
-        type = type === "AM" ? "PM" : "AM";
       }
     }
     this.time = { min, hour, type };
@@ -50,6 +52,10 @@ class Clock {
     const formattedHours = String(hour).padStart(2, "0");
     const formattedMinutes = String(min).padStart(2, "0");
     return `${formattedHours}:${formattedMinutes} ${type}`
+  }
+  getDate() {
+    let { seasonDay, gameDays, gameSeasons,gameDOW } = this.time;
+    return `${gameDays[gameDOW]}    &#160 &#160 &#160 &#160 &#160 &#160     ${seasonDay} `
   }
   setDay(day) {
     this.time.gameDay = day;

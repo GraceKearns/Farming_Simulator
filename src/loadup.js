@@ -9,6 +9,7 @@ function startAnimating(fps) {
 
 }
 class Game {
+    
     constructor() {
         this.clock = new Clock()
         console.log(this.clock.time)
@@ -25,7 +26,7 @@ class Game {
         this.playerlist = [];
         this.imageLoad(this.imageList)
         this.initPlayers(this.playerlist)
-       
+
 
         window.addEventListener('keydown', (event) => {
             console.log(this.playerlist[0].playerY)
@@ -41,27 +42,31 @@ class Game {
         const windowHeight = window.innerHeight;
         this.imageContainer.style.width = windowWidth + 'px';
         this.imageContainer.style.height = windowHeight + 'px';
-        const imageWidth = this.imageList[2].width; // Assuming imageList[2] is the bottom-centered image
+        const imageWidth = this.imageList[2].width; 
         const imageHeight = this.imageList[2].height;
         const leftPosition = (windowWidth - imageWidth) / 2 + 'px';
         const bottomPosition = (windowHeight - imageHeight) + 'px';
         this.imageList[2].style.left = leftPosition;
         this.imageList[2].style.top = bottomPosition;
-        const imageWidth3 = this.imageList[3].width; // Assuming imageList[3] is the top-right image
+        const imageWidth3 = this.imageList[3].width; 
         this.imageList[3].style.position = 'absolute';
-        this.imageList[3].style.top = '10px'; // Adjust top position
-        this.imageList[3].style.left = windowWidth-imageWidth3+"px"; // Adjust right position
-        this.imageList[3].style.width = imageWidth3 + 'px'; // Adjust width to retain original size
-        this.timeText.style.left= window.innerWidth -this.imageList[3].width/1.2 + "px";
-        this.timeText.style.top= this.imageList[3].height/1.5 + "px";
-        this.timeText2.style.left= window.innerWidth -this.imageList[3].width/1.2 + "px";
-        this.timeText2.style.top= this.imageList[3].height/2.4 + "px";
-        this.timeText2.innerHTML=this.clock.time.gameDOW[this.clock.time.seasonDay]+ " "+ this.clock.time.seasonDay
+        this.imageList[3].style.top = '10px'; 
+        this.imageList[3].style.left = windowWidth-imageWidth3+"px"; 
+        this.imageList[3].style.width = imageWidth3 + 'px'; 
+        this.timeText.style.left= window.innerWidth -this.imageList[3].width/1.5 + "px";
+        this.timeText.style.top= this.imageList[3].height/1.65 + "px";
+        this.timeText2.style.left= window.innerWidth -this.imageList[3].width/1.4 + "px";
+        this.timeText2.style.top= this.imageList[3].height/6.9 + "px";
+        this.timeText2.innerHTML=this.clock.getDate()
         this.imageContainer.appendChild(this.imageList[2]);
         this.imageContainer.appendChild(this.imageList[3]);
 
     }
     startGame() {
+        const font = new FontFace('Margarine-Regular', 'url(src/fonts/Margarine-Regular.ttf)');
+        font.load().then(loadedFont => {
+            document.fonts.add(loadedFont);
+        })
         this.canvas = document.createElement('canvas');
         this.canvas.id = "CursorLayer";
         this.canvas.width = 620;
@@ -69,11 +74,14 @@ class Game {
         this.canvas.style.zIndex = 0;
         this.canvas.style.position = "absolute";
         this.canvas.style.border = "1px solid black";
-        this.canvas.style.left = "70px";
-        this.canvas.style.top = "20px";
+    
         this.canvas.style.width = "100vw"
         this.canvas.style.height = "100vh"
         this.canvas.style.margin = 0;
+        this.currentFrame = 0;
+        this.frameCount = 3; // Assuming 4 frames in the walking animation
+        this.animationDelay = 6; // Adjust this value to control the animation speed
+        this.frameDelayCounter = 0;
         this.imageContainer = document.createElement('div');
         this.imageContainer.id = 'imageContainer';
         this.imageContainer.style.position = 'absolute';
@@ -94,13 +102,15 @@ class Game {
         this.timeText.style.zIndex = '5';
         this.timeText.style.width="200px"
         this.timeText.style.wrap="no-wrap"
+        this.timeText.style.fontFamily = 'Margarine-Regular, sans-serif'
         this.timeText2 = document.createElement('p'); 
+        this.timeText2.style.fontFamily = 'Margarine-Regular, sans-serif'
         this.timeText2.style.position = 'absolute';
         this.timeText2.style.color = 'black';
         this.timeText2.style.zIndex = '5';
         this.timeText2.style.width="200px"
         this.timeText2.style.wrap="no-wrap"
-       
+        
         this.handleResize()
         // Append the div to the body
         document.body.appendChild(this.imageContainer);
@@ -109,6 +119,9 @@ class Game {
         this.keyPresses = {};
         console.log(this.keyPresses)
         this.ctx = this.canvas.getContext('2d')
+        this.ctx.imageSmoothingEnabled = false;
+        this.ctx.webkitImageSmoothingEnabled = false; 
+        this.ctx.scale(2,2);
         document.body.appendChild(this.canvas);
 
         this.animate();
@@ -119,7 +132,7 @@ class Game {
     animate() {
         this.ctx.clearRect(0, 0, 640, 480)
         this.timeText.innerHTML=this.clock.getTime()
-        this.drawMap(40, layer1.length, layer1[0].length, 16)
+        this.drawMap(40, layer1.length, layer1[0].length, 9)
 
         console.log(layer1.length + " " + layer1[0].length)
 
@@ -128,12 +141,12 @@ class Game {
         if (this.keyPresses.w) {
             deltaMov.y = -2
             this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 120
+            this.playerlist[0].playerWalkY = 150
         }
         if (this.keyPresses.a) {
             deltaMov.x = -2
             this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 80
+            this.playerlist[0].playerWalkY = 50
         }
         if (this.keyPresses.s) {
             deltaMov.y = 2
@@ -143,7 +156,7 @@ class Game {
         if (this.keyPresses.d) {
             deltaMov.x = 2
             this.playerlist[0].playerWalkX = 0
-            this.playerlist[0].playerWalkY = 40
+            this.playerlist[0].playerWalkY = 100
 
         }
         if (!this.getTile(this.playerlist[0].playerX + deltaMov.x, this.playerlist[0].playerY + deltaMov.y, 20) == 1) {
@@ -151,14 +164,14 @@ class Game {
                 deltaMov.x *= 0.71
                 deltaMov.y *= 0.71
             }
-            if (this.playerlist[0].playerX > this.canvas.width / 2 && this.playerlist[0].playerCameraX >= 0) {
+            if (this.playerlist[0].playerX > ((this.canvas.width/2) / 2.1) && this.playerlist[0].playerCameraX >= 0) {
                 this.playerlist[0].playerCameraX += deltaMov.x;
             }
             else {
                 this.playerlist[0].playerX += deltaMov.x;
                 this.playerlist[0].playerCameraX = 0
             }
-            if (this.playerlist[0].playerY > this.canvas.height / 2 && this.playerlist[0].playerCameraY >= 0) {
+            if (this.playerlist[0].playerY > (this.canvas.height/2) / 2.8 && this.playerlist[0].playerCameraY >= 0) {
                 this.playerlist[0].playerCameraY += deltaMov.y;
             }
             else {
@@ -167,7 +180,7 @@ class Game {
             }
 
         }
-        this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 40, 40, this.playerlist[0].playerX, this.playerlist[0].playerY)
+        this.drawPlayers(this.playerlist[0].playerWalkX, this.playerlist[0].playerWalkY, 30, 50, this.playerlist[0].playerX, this.playerlist[0].playerY)
 
         now = Date.now();
         elapsed = now - then;
@@ -181,6 +194,8 @@ class Game {
         playerList.push(player)
     }
     imageLoad(imageList) {
+        
+
         var tilesetImage = new Image();
         tilesetImage.src = 'src/img/tileset2.png';
         imageList.push(tilesetImage)
@@ -196,7 +211,25 @@ class Game {
         menu.onload = () => this.startGame()
     }
     drawPlayers(sx, sy, width, height, x, y) {
-        this.ctx.drawImage(this.imageList[1], sx, sy, width, height, x, y, 40, 40);
+        const frameWidth = this.imageList[1].width / this.frameCount;
+        this.ctx.drawImage(
+            this.imageList[1],
+            this.currentFrame * frameWidth,
+            sy,
+            frameWidth,
+            height,
+            x,
+            y,
+            30,
+            50
+        );
+        if (this.frameDelayCounter >= this.animationDelay ) {
+            this.currentFrame = (this.currentFrame + 1) % this.frameCount;
+            this.frameDelayCounter = 0;
+        } else {
+         
+            this.frameDelayCounter++;
+        }
     }
     drawMap(tileSize, rowTileCount, colTileCount, imageNumTiles, tileChoice) {
         let offsetX = Math.floor(this.playerlist[0].playerX + this.playerlist[0].playerCameraX) % tileSize;
