@@ -9,5 +9,8 @@ class Player {
         this.playerMoving = moving
         this.playerFacing = facing
         this.playerLocation = location
+        this.playerInventory = new Inventory("player",null,3)
+   
+        console.log(this.playerInventory.inventoryHotBar)
     }
 }
