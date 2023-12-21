@@ -14,7 +14,7 @@ npm start
 ```
 
 # Demo
-<img src="https://i.imgur.com/Kk58E3f.mp4">
+[enter image description here](https://i.imgur.com/Kk58E3f.gif)
 
 
 
