@@ -13,9 +13,8 @@ Simply navigate to the src folder and run the following
 npm start
 ```
 
-
 # Demo
-![alt text](https://i.imgur.com/Kk58E3f.gif)
+<img src="https://imgur.com/Kk58E3f">
 
 
 
