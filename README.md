@@ -15,7 +15,7 @@ npm start
 
 
 # Demo
-![hippo](https://media3.giphy.com/media/aUovxH8Vf9qDu/giphy.gif)
+![hippo](https://i.imgur.com/Kk58E3f.gif)
 
 
 
