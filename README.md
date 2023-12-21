@@ -13,8 +13,9 @@ Simply navigate to the src folder and run the following
 npm start
 ```
 
+
 # Demo
-[enter image description here](https://i.imgur.com/Kk58E3f.gif)
+![hippo](https://media3.giphy.com/media/aUovxH8Vf9qDu/giphy.gif)
 
 
 
